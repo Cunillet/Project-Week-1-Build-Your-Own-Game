@@ -1,6 +1,7 @@
 import base64
 from datetime import datetime
-
+from pathlib import Path
+import os
 
 class Encoder:
 
@@ -8,93 +9,97 @@ class Encoder:
         spl = []
         for i in range(0, len(msg), 2):
             splitted_part = msg[i:i + 2]
-            print('splitted part', splitted_part)
-            splitted_bytes = bytes(splitted_part, 'utf-8')
-            print('splitted bytes', splitted_bytes)
-            int_val = int.from_bytes(splitted_bytes, byteorder = 'big')
-            spl.append(int_val)
-        print('splitted -->',spl)
+            spl.append(splitted_part)
         return spl
 
     def encode_str(self, msg, encriptor):
         encoded_bytes = base64.b64encode(msg.encode('utf-8'))
-        print('encoded bytes', encoded_bytes)
         encoded_str = str(encoded_bytes, 'utf-8')
-        print('encoded str', encoded_str)
         encoded_parts = self.split_string_in_parts(encoded_str)
-        return [int(i) * encriptor for i in encoded_parts]
+        encoded_parts = encoded_parts[::-1]
+        return encoded_parts
     
     def decode_str(self, msg, encriptor):
-        encoded_list = []
-        for i in msg:
-            #print('value i: ', i, ' value encriptor', encriptor, ' result', (i/encriptor))
-            base_int = int(i / encriptor)
-            #print('base_int',base_int)
-            base_bytes = bytes(base_int)
-            #print('base_bytes', base_bytes)
-            base_str = str(base_bytes,'utf-8')
-            encoded_list.append(base_str)
-
-        print(encoded_list)
-        encoded_str = ''.join(encoded_list)
-        print('encoded_str', encoded_str)
+        msg = msg[::-1]
+        encoded_str = ''.join(msg)
         encoded_bytes = bytes(encoded_str, 'utf-8')
         decoded_bytes = base64.b64decode(encoded_bytes)
         return str(decoded_bytes, 'utf-8')
-
-
-
-        """
-        encoded_list = [str(int(i / encriptor)) for i in msg]
-        encoded_bytes = bytes(int(''.join(encoded_list)))
-        print('decoding bytes', encoded_bytes)
-        encoded_str = str(encoded_bytes, 'utf-8')
-        print('decoding string', encoded_str)
-        decoded_bytes = base64.b64decode(encoded_bytes)
-        return str(decoded_bytes, 'utf-8')"""
 
 class MessageManager:
     messages = []
     encriptors = []
     encoder = Encoder()
+    f = ''
+    f_lines = 0
+
+    def __init__(self):
+        path = input('Please introduce a path to recover old messages: ')
+        data_folder = Path(path + 'decenc')
+        if (data_folder.exists()):
+            self.f = open(path + 'decenc', 'r+')
+            for line in self.f.readlines():
+                spl = []
+                for i in range(0, len(line), 2):
+                    splitted_part = line[i:i + 2]
+                    spl.append(splitted_part)
+                self.messages.append(spl)
+                self.f_lines += 1
+            print('Found previous encripted messages.')
+        else:
+            self.f = open(path + 'decenc', 'w+')
+        self.encriptors = [self.get_second()]
 
     def get_second(self):
         curr_time = datetime.now()
         return int(curr_time.strftime('%S'))
 
-    def __init__(self):
-        self.encriptors = [self.get_second()]
-
     def add_new_encriptor(self):
         self.encriptors.append(self.get_second())
 
-    def add_message(self, msg):
-        print('adding message: ', msg)
-        print('encriptor: ', self.encriptors[0])
-        self.messages.append(self.encoder.encode_str(msg, self.encriptors[0]))
+    def add_message(self):
+        msg = input('Please, introduce the message: ')
+        encrypted_msg = ''.join(self.encoder.encode_str(msg, self.encriptors[0]))
+        self.messages.append(encrypted_msg)
+        self.f.write(encrypted_msg + '\r\n')
         self.add_new_encriptor()
+        self.f_lines
 
     def read_message(self, pos):
-        return self.encoder.decode_str(self.messages[pos], self.encriptors[0])
+        print(f'given pos: {pos} and len of messages: {len(self.messages)}')
+        if(len(self.messages) >= (pos)):
+            return self.encoder.decode_str(self.messages[pos - 1], self.encriptors[0])
+        else:
+            return f'out of range, remember there are {len(self.messages)} messages'
 
+
+def exec_menu(mgr):
+    print('Please, chose an action:')
+    print('1. save a new encrypted message')
+    if (mgr.f_lines > 0):
+        print('2. delete an existing message')
+        print('3. recover a message')
+        print('4. ask the unicorn')
+    opt = input('\r\n   option selected : ')
+    if (opt == '1'):
+        mgr.add_message()
+    elif (opt == '3'):
+        pos = ''
+        while not pos.isdigit():
+            pos = input('Introduce the position of the requested message: ')
+        print('\r\n- ' + mgr.read_message(int(pos)) + '\r\n\r\n')
+    else:
+        mgr.f.close()
+        return False
+
+    return True
+    
 
 mgr = MessageManager()
-msg = 'hola gramola'
-mgr.add_message(msg)
-print(mgr.messages[0])
-
-print(mgr.read_message(0))
-
-
-
-
-
-
-
-
-
-
-
+opt = True
+print('Welcome to the super duper message encriptor!')
+while opt:
+    opt = exec_menu(mgr)
 
 
 
