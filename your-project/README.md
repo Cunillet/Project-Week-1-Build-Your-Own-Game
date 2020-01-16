@@ -1,9 +1,9 @@
 <img src="https://bit.ly/2VnXWr2" alt="Ironhack Logo" width="100"/>
 
-# Title of Your Project
-*[Your Name]*
+# Message Encryptor
+*Oriol Cunill Fulquet*
 
-*[Your Cohort, Campus & Date]*
+*Data Analytics - IronHack - january 2020*
 
 ## Content
 - [Project Description](#project-description)
@@ -13,13 +13,18 @@
 - [Links](#links)
 
 ## Project Description
-Write a short description of your project. Write 1-2 sentences about the game you chose to build and why.
+The current project is a message encryptor. Saves encrypted messages to maintain your information secure. This is useful in cases like shared or public computers.
 
 ## Rules
-Briefly describe the rules of the game.
+- Run the program with python
+- Specify the path of the folder where to save (or recover) encripted messages
 
 ## Workflow
-Outline the workflow you used in your project. What are the steps you went through?
+- Design the idea
+- Define the steps to follow
+- Review the idea and see if they match the defined steps
+- Write some tests and see if there are empty spaces
+- Transform the into code following the defined steps
 
 ## Organization
 How did you organize your work? Did you use any tools like a kanban board?
@@ -32,3 +37,7 @@ Include links to your repository, slides and kanban board. Feel free to include 
 [Repository](https://github.com/)  
 [Slides](https://slides.com/)  
 [Trello](https://trello.com/en)  
+[Python3 Documentation](https://docs.python.org/)
+[stackoverflow - file erase](https://stackoverflow.com/questions/4710067/using-python-for-deleting-a-specific-line-in-a-file)
+[programiz - time](https://www.programiz.com/python-programming/time)
+[base64](https://www.base64decoder.io/python/)
