@@ -31,13 +31,15 @@ class MessageManager:
     encriptors = []
     encoder = Encoder()
     f = ''
+    f_path = ''
     f_lines = 0
 
     def __init__(self):
         path = input('Please introduce a path to recover old messages: ')
+        self.f_path = path + 'decenc'
         data_folder = Path(path + 'decenc')
         if (data_folder.exists()):
-            self.f = open(path + 'decenc', 'r+')
+            self.f = open(self.f_path, 'r+')
             for line in self.f.readlines():
                 spl = []
                 for i in range(0, len(line), 2):
@@ -66,11 +68,22 @@ class MessageManager:
         self.f_lines
 
     def read_message(self, pos):
-        print(f'given pos: {pos} and len of messages: {len(self.messages)}')
         if(len(self.messages) >= (pos)):
             return self.encoder.decode_str(self.messages[pos - 1], self.encriptors[0])
         else:
             return f'out of range, remember there are {len(self.messages)} messages'
+    
+    def remove_line(self, pos):
+        pos -= 1
+        self.f.seek(0)
+        lines = self.f.readlines()
+        self.f = open(self.f_path, 'w+')
+        for line in lines:
+            if (line != ''.join(self.messages[pos])):
+                self.f.write(line)
+        self.f.truncate()
+        del self.messages[pos]
+        self.f_lines -= 1
 
 
 def exec_menu(mgr):
@@ -83,6 +96,12 @@ def exec_menu(mgr):
     opt = input('\r\n   option selected : ')
     if (opt == '1'):
         mgr.add_message()
+    elif (opt == '2'):
+        pos = ''
+        while not pos.isdigit():
+            pos = input('Introduce the position of the requested message: ')
+        mgr.remove_line(int(pos))
+        print(f'line {pos} removed')
     elif (opt == '3'):
         pos = ''
         while not pos.isdigit():
