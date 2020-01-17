@@ -106,7 +106,10 @@ def exec_menu(mgr):
         pos = ''
         while not pos.isdigit():
             pos = input('Introduce the position of the requested message: ')
-        print('\r\n- ' + mgr.read_message(int(pos)) + '\r\n\r\n')
+        print('\r\n---------------------------------------------')
+        print(mgr.read_message(int(pos)))
+        print('---------------------------------------------')
+        input()
     elif (opt == '4'):
         mgr.f.close()
         return False
